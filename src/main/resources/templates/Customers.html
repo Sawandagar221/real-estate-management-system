@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f8;
+            color: #243b53;
+        }
+
+        h1 {
+            color: #243b53;
+        }
+
+        .filter-box {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button, .reset-button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #243b53;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .reset-button {
+            background: #64748b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #243b53;
+            color: white;
+        }
+
+        a {
+            color: #1769aa;
+            margin-right: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+        }
+        /* Customer table action buttons */
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 9px 14px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit {
+            background-color: #e8efff;
+            color: #2458c6;
+            border-color: #cbdafe;
+        }
+
+        .btn-edit:hover {
+            background-color: #2458c6;
+            color: white;
+            box-shadow: 0 3px 8px rgba(36, 88, 198, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .delete-form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .btn-delete {
+            background-color: #fff0f0;
+            color: #c62828;
+            border-color: #ffd1d1;
+        }
+
+        .btn-delete:hover {
+            background-color: #c62828;
+            color: white;
+            box-shadow: 0 3px 8px rgba(198, 40, 40, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-edit:focus-visible,
+        .btn-delete:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .action-buttons {
+                gap: 6px;
+            }
+
+            .btn-edit,
+            .btn-delete {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Customer Management</h1>
+<h2>Customer List</h2>
+
+<!-- Search and Filter Form -->
+<div class="filter-box">
+    <h3>Search &amp; Filter Customers</h3>
+    <a th:href="@{/customers/add}"
+       style="display:inline-block;
+          margin:15px 0;
+          padding:10px 18px;
+          background-color:#243b53;
+          color:white;
+          text-decoration:none;
+          border-radius:5px;">
+        + Add Customer
+    </a>
+
+    <form th:action="@{/customers}" method="get">
+
+        <input type="text"
+               name="keyword"
+               placeholder="Search name, phone or email..."
+               th:value="${keyword}">
+
+        <select name="role">
+            <option value="">All Roles</option>
+            <option value="Buyer"
+                    th:selected="${selectedRole == 'Buyer'}">Buyer</option>
+            <option value="Seller"
+                    th:selected="${selectedRole == 'Seller'}">Seller</option>
+            <option value="Renter"
+                    th:selected="${selectedRole == 'Renter'}">Renter</option>
+        </select>
+
+        <button type="submit">Search / Filter</button>
+
+        <a th:href="@{/customers}" class="reset-button">Reset</a>
+
+    </form>
+</div>
+
+<!-- Customer Table -->
+<table>
+    <thead>
+    <tr>
+        <th>Customer ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="c : ${customers}">
+        <td th:text="${c.customerId}"></td>
+        <td th:text="${c.name}"></td>
+        <td th:text="${c.phone}"></td>
+        <td th:text="${c.email}"></td>
+        <td th:text="${c.role}"></td>
+
+        <td>
+            <div class="action-buttons">
+
+                <a class="btn-edit"
+                   th:href="@{/customers/edit/{id}(id=${c.customerId})}">
+                    ✏️ Edit
+                </a>
+
+                <form th:action="@{/customers/delete/{id}(id=${c.customerId})}"
+                      method="post"
+                      class="delete-form"
+                      onsubmit="return confirm('Are you sure you want to delete this customer? This action cannot be undone.');">
+
+                    <button type="submit" class="btn-delete">
+                        🗑️ Delete
+                    </button>
+                </form>
+
+            </div>
+        </td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(customers)}">
+        <td colspan="6">No customers found.</td>
+    </tr>
+    </tbody>
+</table>
+<!-- Customer Pagination -->
+<div style="margin-top: 20px; text-align: center;">
+
+    <p>
+        Total customers:
+        <strong th:text="${totalCustomers}">0</strong>
+    </p>
+
+    <span th:if="${totalPages > 0}">
+
+        <!-- Previous Button -->
+        <a th:if="${currentPage > 0}"
+           th:href="@{/customers(page=${currentPage - 1}, keyword=${keyword}, role=${selectedRole})}"
+           style="padding: 8px 12px; background: #243b53; color: white;
+                  text-decoration: none; border-radius: 5px;">
+            Previous
+        </a>
+
+        <!-- Page Numbers -->
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+              style="margin: 0 5px;">
+
+            <a th:href="@{/customers(page=${i}, keyword=${keyword}, role=${selectedRole})}"
+               th:text="${i + 1}"
+               th:style="${i == currentPage} ?
+                   'padding: 8px 12px; background: #16a34a; color: white; text-decoration: none; border-radius: 5px;' :
+                   'padding: 8px 12px; background: #e2e8f0; color: #243b53; text-decoration: none; border-radius: 5px;'">
+            </a>
+
+        </span>
+
+        <!-- Next Button -->
+        <a th:if="${currentPage < totalPages - 1}"
+           th:href="@{/customers(page=${currentPage + 1}, keyword=${keyword}, role=${selectedRole})}"
+           style="padding: 8px 12px; background: #243b53; color: white;
+                  text-decoration: none; border-radius: 5px;">
+            Next
+        </a>
+
+    </span>
+
+    <p th:if="${totalPages == 0}">
+        No customers found.
+    </p>
+
+</div>
+<a href="/properties" class="back-link">Back to Properties</a>
+
+</body>
+</html>

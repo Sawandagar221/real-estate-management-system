@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate | Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6fb;
+            color: #1e293b;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #14243a;
+            color: white;
+            padding: 28px 18px;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            padding: 0 12px 32px;
+            line-height: 1.5;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        .menu-title {
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 0 12px;
+            margin: 10px 0 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            margin-bottom: 7px;
+            border-radius: 9px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #28486e;
+            color: white;
+        }
+
+        .nav-link.active {
+            border-left: 3px solid #60a5fa;
+        }
+
+        .sidebar-footer {
+            margin-top: 45px;
+            padding: 15px 12px;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.8;
+            border-top: 1px solid #334155;
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .topbar h1 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .admin-label {
+            background: white;
+            padding: 11px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .section-heading {
+            font-size: 18px;
+            margin-bottom: 17px;
+        }
+
+        /* Statistic cards */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 34px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 23px;
+            border-radius: 13px;
+            border: 1px solid #e8edf4;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.035);
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .stat-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 43px;
+            height: 43px;
+            border-radius: 11px;
+            font-size: 21px;
+        }
+
+        .blue {
+            background: #e8f1ff;
+        }
+
+        .green {
+            background: #e0f7ed;
+        }
+
+        .purple {
+            background: #f0e9ff;
+        }
+
+        .orange {
+            background: #fff0df;
+        }
+
+        .stat-value {
+            font-size: 27px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-note {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        /* Quick actions */
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .action-card {
+            display: block;
+            text-decoration: none;
+            background: white;
+            border: 1px solid #e8edf4;
+            border-radius: 13px;
+            padding: 23px;
+            color: #1e293b;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+        }
+
+        .action-icon {
+            font-size: 25px;
+            margin-bottom: 15px;
+        }
+
+        .action-card h3 {
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .action-card p {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .arrow {
+            display: block;
+            margin-top: 17px;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .bottom-note {
+            margin-top: 35px;
+            padding: 18px 0;
+            border-top: 1px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        @media (max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .actions {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 18px;
+            }
+
+            .brand {
+                padding-bottom: 18px;
+            }
+
+            .menu-title,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .sidebar nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .nav-link {
+                margin: 0;
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .main {
+                padding: 22px 16px;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+
+            .stats {
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 22px;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">ESTATE<span>PRO</span></div>
+
+        <div class="menu-title">Main Menu</div>
+
+        <nav>
+            <a href="/dashboard" class="nav-link active">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="/properties" class="nav-link">
+                <span>⌂</span> Properties
+            </a>
+
+            <a href="/customers" class="nav-link">
+                <span>♙</span> Customers
+            </a>
+
+            <a href="/transactions" class="nav-link">
+                <span>⇄</span> Transactions
+            </a>
+
+            <a href="/transactions/add" class="nav-link">
+                <span>＋</span> Add Transaction
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            Real Estate Management<br>
+            College Project
+        </div>
+    </aside>
+
+    <!-- Dashboard content -->
+    <main class="main">
+
+        <div class="topbar">
+            <div>
+                <h1>Dashboard Overview</h1>
+                <p class="subtitle">
+                    Welcome! Here's what's happening with your real estate business.
+                </p>
+            </div>
+
+            <div class="admin-label">🏢 Management Panel</div>
+        </div>
+
+        <h2 class="section-heading">Business Summary</h2>
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-title">Total Properties</span>
+                    <span class="stat-icon blue">🏠</span>
+                </div>
+
+                <div class="stat-value"
+                     th:text="${totalProperties}">0</div>
+
+                <p class="stat-note">Properties in your database</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-title">Total Customers</span>
+                    <span class="stat-icon green">👥</span>
+                </div>
+
+                <div class="stat-value"
+                     th:text="${totalCustomers}">0</div>
+
+                <p class="stat-note">Registered customers</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-title">Total Transactions</span>
+                    <span class="stat-icon purple">📋</span>
+                </div>
+
+                <div class="stat-value"
+                     th:text="${totalTransactions}">0</div>
+
+                <p class="stat-note">Recorded transactions</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-title">Transaction Value</span>
+                    <span class="stat-icon orange">₹</span>
+                </div>
+
+                <div class="stat-value">
+                    ₹<span th:text="${#numbers.formatDecimal(totalTransactionValue, 1, 2)}">0.00</span>
+                </div>
+
+                <p class="stat-note">Combined transaction amounts</p>
+            </div>
+
+        </section>
+
+        <h2 class="section-heading">Quick Actions</h2>
+
+        <section class="actions">
+
+            <a href="/properties" class="action-card">
+                <div class="action-icon">🏠</div>
+                <h3>Manage Properties</h3>
+                <p>View and manage your existing property listings.</p>
+                <span class="arrow">Open Properties →</span>
+            </a>
+
+            <a href="/customers" class="action-card">
+                <div class="action-icon">👥</div>
+                <h3>Manage Customers</h3>
+                <p>Access your customer records and information.</p>
+                <span class="arrow">Open Customers →</span>
+            </a>
+
+            <a href="/transactions" class="action-card">
+                <div class="action-icon">💳</div>
+                <h3>Manage Transactions</h3>
+                <p>Review, edit, or delete existing transactions.</p>
+                <span class="arrow">Open Transactions →</span>
+            </a>
+
+        </section>
+        <h2 class="section-heading" style="margin-top: 35px;">
+            Recent Transactions
+        </h2>
+
+        <div style="background: white; border: 1px solid #e8edf4;
+            border-radius: 13px; overflow-x: auto;">
+
+            <table style="width: 100%; border-collapse: collapse;
+                  text-align: left; min-width: 700px;">
+
+                <thead>
+                <tr style="background: #f8fafc;">
+                    <th style="padding: 15px;">ID</th>
+                    <th style="padding: 15px;">Property</th>
+                    <th style="padding: 15px;">Customer</th>
+                    <th style="padding: 15px;">Type</th>
+                    <th style="padding: 15px;">Amount</th>
+                    <th style="padding: 15px;">Date</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="t : ${recentTransactions}"
+                    style="border-top: 1px solid #e8edf4;">
+
+                    <td style="padding: 15px;"
+                        th:text="${t.transactionId}"></td>
+
+                    <td style="padding: 15px;">
+                <span th:each="p : ${properties}"
+                      th:if="${p.propertyId == t.propertyId}"
+                      th:text="${p.title}"></span>
+                    </td>
+
+                    <td style="padding: 15px;">
+                <span th:each="c : ${customers}"
+                      th:if="${c.customerId == t.customerId}"
+                      th:text="${c.name}"></span>
+                    </td>
+
+                    <td style="padding: 15px;"
+                        th:text="${t.transactionType}"></td>
+
+                    <td style="padding: 15px; white-space: nowrap;"
+                        th:text="${'₹' + #numbers.formatDecimal(t.amount, 1, 2)}"></td>
+
+                    <td style="padding: 15px; white-space: nowrap;"
+                        th:text="${t.transactionDate}"></td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(recentTransactions)}">
+                    <td colspan="6"
+                        style="padding: 20px; text-align: center; color: #64748b;">
+                        No transactions available yet.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p style="margin-top: 18px;">
+            <a href="/transactions"
+               style="color: #2563eb; text-decoration: none; font-weight: 600;">
+                View All Transactions →
+            </a>
+        </p>
+        <div class="bottom-note">
+            EstatePro · Real Estate Management System
+        </div>
+
+    </main>
+</div>
+</body>
+</html>

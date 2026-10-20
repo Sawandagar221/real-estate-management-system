@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Management | Real Estate System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f9;
+            color: #243447;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #172b4d, #334e68);
+            color: white;
+            padding: 28px 5%;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #dbe5f0;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 0 22px;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 7px;
+            background: white;
+            color: #243b53;
+            text-decoration: none;
+            border: 1px solid #dce3ec;
+            font-weight: bold;
+        }
+
+        .nav-link:hover {
+            background: #eaf0f7;
+        }
+
+        .add-button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 7px;
+            background: #16794b;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(22, 121, 75, 0.18);
+        }
+
+        .add-button:hover {
+            background: #11633d;
+        }
+
+        .summary {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            border: 1px solid #e5eaf0;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 12px rgba(30, 50, 80, 0.04);
+        }
+
+        .summary .label {
+            color: #65758b;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .summary .value {
+            font-size: 27px;
+            font-weight: bold;
+            color: #243b53;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 4px 18px rgba(30, 50, 80, 0.06);
+            border: 1px solid #e5eaf0;
+        }
+
+        .table-heading {
+            margin: 0 0 18px;
+            font-size: 20px;
+            color: #243b53;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #edf2f8;
+            color: #334e68;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 15px 13px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px 13px;
+            border-bottom: 1px solid #edf0f4;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .id-badge {
+            display: inline-block;
+            background: #e8eef8;
+            color: #243b53;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .type-badge {
+            display: inline-block;
+            background: #e4f5eb;
+            color: #187344;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .amount {
+            font-weight: bold;
+            color: #243b53;
+            white-space: nowrap;
+        }
+
+        .action-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-button {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 5px;
+            background: #e7efff;
+            color: #2457a7;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .edit-button:hover {
+            background: #d5e3ff;
+        }
+
+        .delete-button {
+            padding: 7px 11px;
+            border: none;
+            border-radius: 5px;
+            background: #fde8e7;
+            color: #b42318;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .delete-button:hover {
+            background: #fbd3d0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 35px 15px;
+            color: #65758b;
+        }
+
+        .empty-state a {
+            color: #16794b;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 23px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .toolbar {
+                align-items: stretch;
+            }
+
+            .add-button {
+                text-align: center;
+            }
+
+            .table-card {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>Transaction Management</h1>
+    <p>Manage property sales, rentals and transaction records in one place.</p>
+</header>
+
+<main class="container">
+
+    <div class="toolbar">
+        <nav class="navigation">
+            <a class="nav-link" th:href="@{/properties}">Properties</a>
+            <a class="nav-link" th:href="@{/customers}">Customers</a>
+        </nav>
+
+        <a class="add-button" th:href="@{/transactions/add}">
+            + Add New Transaction
+        </a>
+    </div>
+
+    <section class="summary">
+        <div class="label">Total Transactions</div>
+        <div class="value" th:text="${#lists.size(transactions)}">0</div>
+    </section>
+
+    <section class="table-card">
+        <h2 class="table-heading">Transaction Records</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Property Title</th>
+                    <th>Customer Name</th>
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Transaction Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="t : ${transactions}">
+                    <td>
+                        <span class="id-badge"
+                              th:text="${t.transactionId}"></span>
+                    </td>
+
+                    <td>
+                        <span th:each="p : ${properties}"
+                              th:if="${p.propertyId == t.propertyId}"
+                              th:text="${p.title}"></span>
+                    </td>
+
+                    <td>
+                        <span th:each="c : ${customers}"
+                              th:if="${c.customerId == t.customerId}"
+                              th:text="${c.name}"></span>
+                    </td>
+
+                    <td>
+                        <span class="type-badge"
+                              th:text="${t.transactionType}"></span>
+                    </td>
+
+                    <td class="amount">
+                        ₹<span th:text="${#numbers.formatDecimal(t.amount, 1, 2)}"></span>
+                    </td>
+
+                    <td th:text="${t.transactionDate}"></td>
+
+                    <td>
+                        <div class="action-links">
+                            <a class="edit-button"
+                               th:href="@{/transactions/edit/{id}(id=${t.transactionId})}">
+                                Edit
+                            </a>
+
+                            <form th:action="@{/transactions/delete/{id}(id=${t.transactionId})}"
+                                  method="post"
+                                  onsubmit="return confirm('Are you sure you want to delete this transaction?');">
+
+                                <button class="delete-button" type="submit">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(transactions)}">
+                    <td colspan="7" class="empty-state">
+                        <p>No transactions found yet.</p>
+                        <a th:href="@{/transactions/add}">
+                            Add your first transaction
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

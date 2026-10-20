@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Customer</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        form {
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 9px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Edit Customer</h1>
+
+<form th:action="@{/customers/edit/{id}(id=${customer.customerId})}"
+      th:object="${customer}" method="post">
+
+    <label for="name">Customer Name:</label>
+    <input type="text" id="name" th:field="*{name}" required>
+
+    <label for="phone">Phone:</label>
+    <input type="text" id="phone" th:field="*{phone}" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" th:field="*{email}" required>
+
+    <label for="role">Role:</label>
+    <select id="role" th:field="*{role}" required>
+        <option value="buyer">Buyer</option>
+        <option value="seller">Seller</option>
+    </select>
+
+    <button type="submit">Update Customer</button>
+</form>
+
+<p><a href="/customers">Back to Customers</a></p>
+
+</body>
+</html>
